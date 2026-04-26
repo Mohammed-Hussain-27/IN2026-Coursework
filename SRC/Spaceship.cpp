@@ -68,6 +68,14 @@ void Spaceship::Rotate(float r)
 	mRotation = r;
 }
 
+/** Apply brakes - slow the spaceship down. */
+void Spaceship::Brake(void)
+{
+	// Reduce velocity by 10% each time brakes are applied
+	mVelocity.x *= 0.8f;
+	mVelocity.y *= 0.8f;
+}
+
 /** Shoot a bullet. */
 void Spaceship::Shoot(void)
 {

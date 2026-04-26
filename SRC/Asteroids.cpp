@@ -88,7 +88,7 @@ void Asteroids::Start()
 	// Start timer to spawn extra life power-ups every 15 seconds
 	SetTimer(15000, SPAWN_EXTRA_LIFE);
 	// Start timer to spawn invulnerability power-ups every 20 seconds
-	SetTimer(5000, SPAWN_INVULNERABILITY);
+	SetTimer(20000, SPAWN_INVULNERABILITY);
 
 	// Start the game
 	GameSession::Start();
@@ -110,6 +110,12 @@ void Asteroids::OnKeyPressed(uchar key, int x, int y)
 		// Spacebar - shoot (only when game is active)
 	case ' ':
 		if (mGameStarted) mSpaceship->Shoot();
+		break;
+
+		// S key - apply brakes (only when game is active)
+	case 's':
+	case 'S':
+		if (mGameStarted) mSpaceship->Brake();
 		break;
 
 		// ENTER key - start the game from menu
@@ -359,7 +365,7 @@ void Asteroids::CreateGUI()
 	mGameDisplay->GetContainer()->AddComponent(start_component, GLVector2f(0.5f, 0.5f));
 
 	// Instructions label
-	mInstructionsLabel = make_shared<GUILabel>("Arrows: Move  Space: Shoot  B: Back");
+	mInstructionsLabel = make_shared<GUILabel>("Arrow Keys: Move  Space: Shoot  S: Brake  B: Back to Menu");
 	mInstructionsLabel->SetHorizontalAlignment(GUIComponent::GUI_HALIGN_CENTER);
 	mInstructionsLabel->SetVerticalAlignment(GUIComponent::GUI_VALIGN_MIDDLE);
 	mInstructionsLabel->SetVisible(false);
