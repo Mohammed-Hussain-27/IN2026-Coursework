@@ -62,10 +62,12 @@ private:
 	void CreateGUI();
 	void CreateAsteroids(const uint num_asteroids);
 	shared_ptr<GameObject> CreateExplosion();
+	void CreateExtraLife();
 
 	const static uint SHOW_GAME_OVER = 0;
 	const static uint START_NEXT_LEVEL = 1;
 	const static uint CREATE_NEW_PLAYER = 2;
+	const static uint SPAWN_EXTRA_LIFE = 3;
 
 	ScoreKeeper mScoreKeeper;
 	Player mPlayer;

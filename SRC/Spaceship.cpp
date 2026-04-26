@@ -94,13 +94,23 @@ void Spaceship::Shoot(void)
 
 bool Spaceship::CollisionTest(shared_ptr<GameObject> o)
 {
-	if (o->GetType() != GameObjectType("Asteroid")) return false;
+	// Collide with asteroids and power-ups
+	if (o->GetType() != GameObjectType("Asteroid") &&
+		o->GetType() != GameObjectType("ExtraLife")) return false;
 	if (mBoundingShape.get() == NULL) return false;
 	if (o->GetBoundingShape().get() == NULL) return false;
 	return mBoundingShape->CollisionTest(o->GetBoundingShape());
 }
 
-void Spaceship::OnCollision(const GameObjectList &objects)
+void Spaceship::OnCollision(const GameObjectList& objects)
 {
-	mWorld->FlagForRemoval(GetThisPtr());
+	// Only remove spaceship if it collided with an asteroid
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == GameObjectType("Asteroid"))
+		{
+			mWorld->FlagForRemoval(GetThisPtr());
+			return;
+		}
+	}
 }

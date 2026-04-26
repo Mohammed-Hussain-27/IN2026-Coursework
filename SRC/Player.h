@@ -40,6 +40,18 @@ public:
 		}
 	}
 
+	// Add an extra life to the player
+	void AddLife()
+	{
+		mLives++;
+	}
+
+	// Get the current number of lives
+	int GetLives()
+	{
+		return mLives;
+	}
+
 private:
 	int mLives;
 

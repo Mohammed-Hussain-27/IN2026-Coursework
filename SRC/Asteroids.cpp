@@ -11,6 +11,7 @@
 #include "BoundingSphere.h"
 #include "GUILabel.h"
 #include "Explosion.h"
+#include "ExtraLife.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -81,6 +82,10 @@ void Asteroids::Start()
 	mStartLabel->SetVisible(true);
 	mScoreLabel->SetVisible(false);
 	mLivesLabel->SetVisible(false);
+
+	// Start the game
+	// Start timer to spawn extra life power-ups every 15 seconds
+	SetTimer(15000, SPAWN_EXTRA_LIFE);
 
 	// Start the game
 	GameSession::Start();
@@ -181,16 +186,37 @@ void Asteroids::OnSpecialKeyReleased(int key, int x, int y)
 
 void Asteroids::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 {
+	// Handle asteroid removal
 	if (object->GetType() == GameObjectType("Asteroid"))
 	{
+		// Create explosion at asteroid position
 		shared_ptr<GameObject> explosion = CreateExplosion();
 		explosion->SetPosition(object->GetPosition());
 		explosion->SetRotation(object->GetRotation());
 		mGameWorld->AddObject(explosion);
+
+		// Decrement asteroid count and start next level if all gone
 		mAsteroidCount--;
 		if (mAsteroidCount <= 0)
 		{
 			SetTimer(500, START_NEXT_LEVEL);
+		}
+	}
+
+	// Handle extra life power-up collection
+	if (object->GetType() == GameObjectType("ExtraLife"))
+	{
+		// Only add life if properly collected by spaceship
+		shared_ptr<ExtraLife> extraLife = dynamic_pointer_cast<ExtraLife>(object);
+		if (extraLife && extraLife->mCollectedBySpaceship)
+		{
+			// Add a life to the player
+			mPlayer.AddLife();
+
+			// Update the lives label
+			std::ostringstream msg_stream;
+			msg_stream << "Lives: " << mPlayer.GetLives();
+			mLivesLabel->SetText(msg_stream.str());
 		}
 	}
 }
@@ -215,6 +241,12 @@ void Asteroids::OnTimer(int value)
 	if (value == SHOW_GAME_OVER)
 	{
 		mGameOverLabel->SetVisible(true);
+	}
+	// Spawn an extra life power-up and set timer for next one
+	if (value == SPAWN_EXTRA_LIFE)
+	{
+		CreateExtraLife();
+		SetTimer(15000, SPAWN_EXTRA_LIFE);
 	}
 }
 
@@ -353,4 +385,25 @@ shared_ptr<GameObject> Asteroids::CreateExplosion()
 	explosion->SetSprite(explosion_sprite);
 	explosion->Reset();
 	return explosion;
+}
+
+void Asteroids::CreateExtraLife()
+{
+	// Create a new extra life power-up
+	shared_ptr<GameObject> extra_life = make_shared<ExtraLife>();
+
+	// Load the star sprite for the extra life power-up
+	Animation* anim_ptr = AnimationManager::GetInstance().CreateAnimationFromFile(
+		"extra_life", 64, 64, 64, 64, "Extra_Life.png");
+	shared_ptr<Sprite> extra_life_sprite
+		= make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+	extra_life_sprite->SetLoopAnimation(false);
+
+	// Set sprite, scale and bounding shape
+	extra_life->SetSprite(extra_life_sprite);
+	extra_life->SetScale(0.2f);
+	extra_life->SetBoundingShape(make_shared<BoundingSphere>(extra_life->GetThisPtr(), 10.0f));
+
+	// Add it to the game world
+	mGameWorld->AddObject(extra_life);
 }
