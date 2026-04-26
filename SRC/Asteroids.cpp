@@ -13,6 +13,7 @@
 #include "Explosion.h"
 #include "ExtraLife.h"
 #include "Invulnerability.h"
+#include "Teleport.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -88,7 +89,9 @@ void Asteroids::Start()
 	// Start timer to spawn extra life power-ups every 15 seconds
 	SetTimer(15000, SPAWN_EXTRA_LIFE);
 	// Start timer to spawn invulnerability power-ups every 20 seconds
-	SetTimer(20000, SPAWN_INVULNERABILITY);
+	SetTimer(5000, SPAWN_INVULNERABILITY);
+	// Start timer to spawn teleport power-ups every 25 seconds
+	SetTimer(5000, SPAWN_TELEPORT);
 
 	// Start the game
 	GameSession::Start();
@@ -237,6 +240,20 @@ void Asteroids::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 		mShieldLabel->SetVisible(true);
 		SetTimer(5000, END_INVULNERABILITY);
 	}
+
+	// Handle teleport power-up collection
+	if (object->GetType() == GameObjectType("Teleport"))
+	{
+		// Teleport spaceship to a random position
+		GLVector3f newPos;
+		newPos.x = (rand() % 160) - 80;
+		newPos.y = (rand() % 160) - 80;
+		newPos.z = 0.0f;
+		mSpaceship->SetPosition(newPos);
+
+		// Reset velocity so ship doesn't carry momentum
+		mSpaceship->SetVelocity(GLVector3f(0.0f, 0.0f, 0.0f));
+	}
 }
 
 // PUBLIC INSTANCE METHODS IMPLEMENTING ITimerListener ////////////////////////
@@ -273,6 +290,13 @@ void Asteroids::OnTimer(int value)
 	{
 		CreateInvulnerability();
 		SetTimer(20000, SPAWN_INVULNERABILITY);
+	}
+
+	// Spawn teleport power-up
+	if (value == SPAWN_TELEPORT)
+	{
+		CreateTeleport();
+		SetTimer(25000, SPAWN_TELEPORT);
 	}
 
 	// End invulnerability
@@ -469,4 +493,25 @@ void Asteroids::CreateInvulnerability()
 
 	// Add it to the game world
 	mGameWorld->AddObject(invulnerability);
+}
+
+void Asteroids::CreateTeleport()
+{
+	// Create a new teleport power-up
+	shared_ptr<GameObject> teleport = make_shared<Teleport>();
+
+	// Load sprite for teleport power-up
+	Animation* anim_ptr = AnimationManager::GetInstance().CreateAnimationFromFile(
+		"teleport", 64, 64, 64, 64, "teleport.png");
+	shared_ptr<Sprite> teleport_sprite
+		= make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+	teleport_sprite->SetLoopAnimation(false);
+
+	// Set sprite, scale and bounding shape
+	teleport->SetSprite(teleport_sprite);
+	teleport->SetScale(0.2f);
+	teleport->SetBoundingShape(make_shared<BoundingSphere>(teleport->GetThisPtr(), 10.0f));
+
+	// Add it to the game world
+	mGameWorld->AddObject(teleport);
 }

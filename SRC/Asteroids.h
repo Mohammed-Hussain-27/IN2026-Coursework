@@ -65,6 +65,7 @@ private:
 	shared_ptr<GameObject> CreateExplosion();
 	void CreateExtraLife();
 	void CreateInvulnerability();
+	void CreateTeleport();
 
 	const static uint SHOW_GAME_OVER = 0;
 	const static uint START_NEXT_LEVEL = 1;
@@ -72,6 +73,7 @@ private:
 	const static uint SPAWN_EXTRA_LIFE = 3;
 	const static uint SPAWN_INVULNERABILITY = 4;
 	const static uint END_INVULNERABILITY = 5;
+	const static uint SPAWN_TELEPORT = 6;
 
 	ScoreKeeper mScoreKeeper;
 	Player mPlayer;
