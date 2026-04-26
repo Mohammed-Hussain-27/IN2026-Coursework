@@ -1,0 +1,8 @@
+.vs/
+BIN/
+OBJ/
+bin/
+obj/
+*.exe
+*.pdb
+*.ilk
