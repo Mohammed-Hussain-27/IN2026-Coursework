@@ -89,9 +89,9 @@ void Asteroids::Start()
 	// Start timer to spawn extra life power-ups every 15 seconds
 	SetTimer(15000, SPAWN_EXTRA_LIFE);
 	// Start timer to spawn invulnerability power-ups every 20 seconds
-	SetTimer(5000, SPAWN_INVULNERABILITY);
+	SetTimer(20000, SPAWN_INVULNERABILITY);
 	// Start timer to spawn teleport power-ups every 25 seconds
-	SetTimer(5000, SPAWN_TELEPORT);
+	SetTimer(25000, SPAWN_TELEPORT);
 
 	// Start the game
 	GameSession::Start();
@@ -231,7 +231,7 @@ void Asteroids::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 			mLivesLabel->SetText(msg_stream.str());
 		}
 	}
-	
+
 	// Handle invulnerability power-up collection
 	if (object->GetType() == GameObjectType("Invulnerability"))
 	{
@@ -277,14 +277,14 @@ void Asteroids::OnTimer(int value)
 	{
 		mGameOverLabel->SetVisible(true);
 	}
-	
+
 	// Spawn an extra life power-up and set timer for next one
 	if (value == SPAWN_EXTRA_LIFE)
 	{
 		CreateExtraLife();
 		SetTimer(15000, SPAWN_EXTRA_LIFE);
 	}
-	
+
 	// Spawn invulnerability power-up
 	if (value == SPAWN_INVULNERABILITY)
 	{

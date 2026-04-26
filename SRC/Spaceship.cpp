@@ -58,8 +58,8 @@ void Spaceship::Thrust(float t)
 {
 	mThrust = t;
 	// Increase acceleration in the direction of ship
-	mAcceleration.x = mThrust*cos(DEG2RAD*mAngle);
-	mAcceleration.y = mThrust*sin(DEG2RAD*mAngle);
+	mAcceleration.x = mThrust * cos(DEG2RAD * mAngle);
+	mAcceleration.y = mThrust * sin(DEG2RAD * mAngle);
 }
 
 /** Set the rotation. */
@@ -82,7 +82,7 @@ void Spaceship::Shoot(void)
 	// Check the world exists
 	if (!mWorld) return;
 	// Construct a unit length vector in the direction the spaceship is headed
-	GLVector3f spaceship_heading(cos(DEG2RAD*mAngle), sin(DEG2RAD*mAngle), 0);
+	GLVector3f spaceship_heading(cos(DEG2RAD * mAngle), sin(DEG2RAD * mAngle), 0);
 	spaceship_heading.normalize();
 	// Calculate the point at the node of the spaceship from position and heading
 	GLVector3f bullet_position = mPosition + (spaceship_heading * 4);
@@ -92,7 +92,7 @@ void Spaceship::Shoot(void)
 	GLVector3f bullet_velocity = mVelocity + spaceship_heading * bullet_speed;
 	// Construct a new bullet
 	shared_ptr<GameObject> bullet
-		(new Bullet(bullet_position, bullet_velocity, mAcceleration, mAngle, 0, 2000));
+	(new Bullet(bullet_position, bullet_velocity, mAcceleration, mAngle, 0, 2000));
 	bullet->SetBoundingShape(make_shared<BoundingSphere>(bullet->GetThisPtr(), 2.0f));
 	bullet->SetShape(mBulletShape);
 	// Add the new bullet to the game world

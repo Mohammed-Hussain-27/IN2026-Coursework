@@ -10,8 +10,8 @@ Asteroid::Asteroid(void) : GameObject("Asteroid")
 	mPosition.x = rand() / 2;
 	mPosition.y = rand() / 2;
 	mPosition.z = 0.0;
-	mVelocity.x = 10.0 * cos(DEG2RAD*mAngle);
-	mVelocity.y = 10.0 * sin(DEG2RAD*mAngle);
+	mVelocity.x = 10.0 * cos(DEG2RAD * mAngle);
+	mVelocity.y = 10.0 * sin(DEG2RAD * mAngle);
 	mVelocity.z = 0.0;
 }
 
