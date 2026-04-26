@@ -12,6 +12,7 @@
 #include "GUILabel.h"
 #include "Explosion.h"
 #include "ExtraLife.h"
+#include "Invulnerability.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -86,6 +87,8 @@ void Asteroids::Start()
 	// Start the game
 	// Start timer to spawn extra life power-ups every 15 seconds
 	SetTimer(15000, SPAWN_EXTRA_LIFE);
+	// Start timer to spawn invulnerability power-ups every 20 seconds
+	SetTimer(5000, SPAWN_INVULNERABILITY);
 
 	// Start the game
 	GameSession::Start();
@@ -219,6 +222,15 @@ void Asteroids::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 			mLivesLabel->SetText(msg_stream.str());
 		}
 	}
+	
+	// Handle invulnerability power-up collection
+	if (object->GetType() == GameObjectType("Invulnerability"))
+	{
+		// Make spaceship invulnerable for 5 seconds
+		mSpaceship->SetInvulnerable(true);
+		mShieldLabel->SetVisible(true);
+		SetTimer(5000, END_INVULNERABILITY);
+	}
 }
 
 // PUBLIC INSTANCE METHODS IMPLEMENTING ITimerListener ////////////////////////
@@ -242,11 +254,26 @@ void Asteroids::OnTimer(int value)
 	{
 		mGameOverLabel->SetVisible(true);
 	}
+	
 	// Spawn an extra life power-up and set timer for next one
 	if (value == SPAWN_EXTRA_LIFE)
 	{
 		CreateExtraLife();
 		SetTimer(15000, SPAWN_EXTRA_LIFE);
+	}
+	
+	// Spawn invulnerability power-up
+	if (value == SPAWN_INVULNERABILITY)
+	{
+		CreateInvulnerability();
+		SetTimer(20000, SPAWN_INVULNERABILITY);
+	}
+
+	// End invulnerability
+	if (value == END_INVULNERABILITY)
+	{
+		mSpaceship->SetInvulnerable(false);
+		mShieldLabel->SetVisible(false);
 	}
 }
 
@@ -339,6 +366,15 @@ void Asteroids::CreateGUI()
 	shared_ptr<GUIComponent> inst1
 		= static_pointer_cast<GUIComponent>(mInstructionsLabel);
 	mGameDisplay->GetContainer()->AddComponent(inst1, GLVector2f(0.5f, 0.5f));
+
+	// Shield active label - shown when invulnerability is active
+	mShieldLabel = make_shared<GUILabel>("** SHIELD ACTIVE **");
+	mShieldLabel->SetHorizontalAlignment(GUIComponent::GUI_HALIGN_CENTER);
+	mShieldLabel->SetVerticalAlignment(GUIComponent::GUI_VALIGN_MIDDLE);
+	mShieldLabel->SetVisible(false);
+	shared_ptr<GUIComponent> shield_component
+		= static_pointer_cast<GUIComponent>(mShieldLabel);
+	mGameDisplay->GetContainer()->AddComponent(shield_component, GLVector2f(0.5f, 0.3f));
 }
 
 void Asteroids::OnScoreChanged(int score)
@@ -406,4 +442,25 @@ void Asteroids::CreateExtraLife()
 
 	// Add it to the game world
 	mGameWorld->AddObject(extra_life);
+}
+
+void Asteroids::CreateInvulnerability()
+{
+	// Create a new invulnerability power-up
+	shared_ptr<GameObject> invulnerability = make_shared<Invulnerability>();
+
+	// Use a sprite for the invulnerability power-up
+	Animation* anim_ptr = AnimationManager::GetInstance().CreateAnimationFromFile(
+		"invulnerability", 64, 64, 64, 64, "defence.png");
+	shared_ptr<Sprite> invulnerability_sprite
+		= make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+	invulnerability_sprite->SetLoopAnimation(false);
+
+	// Set sprite, scale and bounding shape
+	invulnerability->SetSprite(invulnerability_sprite);
+	invulnerability->SetScale(0.2f);
+	invulnerability->SetBoundingShape(make_shared<BoundingSphere>(invulnerability->GetThisPtr(), 10.0f));
+
+	// Add it to the game world
+	mGameWorld->AddObject(invulnerability);
 }

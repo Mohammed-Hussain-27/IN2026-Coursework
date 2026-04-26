@@ -50,6 +50,7 @@ private:
 	shared_ptr<GUILabel> mGameOverLabel;
 	shared_ptr<GUILabel> mStartLabel;
 	shared_ptr<GUILabel> mInstructionsLabel;
+	shared_ptr<GUILabel> mShieldLabel;
 
 
 	uint mLevel;
@@ -63,11 +64,14 @@ private:
 	void CreateAsteroids(const uint num_asteroids);
 	shared_ptr<GameObject> CreateExplosion();
 	void CreateExtraLife();
+	void CreateInvulnerability();
 
 	const static uint SHOW_GAME_OVER = 0;
 	const static uint START_NEXT_LEVEL = 1;
 	const static uint CREATE_NEW_PLAYER = 2;
 	const static uint SPAWN_EXTRA_LIFE = 3;
+	const static uint SPAWN_INVULNERABILITY = 4;
+	const static uint END_INVULNERABILITY = 5;
 
 	ScoreKeeper mScoreKeeper;
 	Player mPlayer;

@@ -104,10 +104,10 @@ bool Spaceship::CollisionTest(shared_ptr<GameObject> o)
 
 void Spaceship::OnCollision(const GameObjectList& objects)
 {
-	// Only remove spaceship if it collided with an asteroid
+	// Only remove spaceship if it collided with an asteroid and is not invulnerable
 	for (auto& obj : objects)
 	{
-		if (obj->GetType() == GameObjectType("Asteroid"))
+		if (obj->GetType() == GameObjectType("Asteroid") && !mInvulnerable)
 		{
 			mWorld->FlagForRemoval(GetThisPtr());
 			return;
